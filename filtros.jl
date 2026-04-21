@@ -1,9 +1,9 @@
 using WAV
 using Plots
 
-y, frecuenciaMuestreo = wavread(raw".\aoe.wav")
+# y, frecuenciaMuestreo = wavread(raw".\aoe.wav")
 # y, frecuenciaMuestreo = wavread(raw"C:\Windows\Media\Alarm02.wav")
-# y, frecuenciaMuestreo = wavread(raw"C:\Windows\Media\Ring01.wav")
+y, frecuenciaMuestreo = wavread(raw"C:\Windows\Media\Ring01.wav")
 # y, frecuenciaMuestreo = wavread(raw".\example.wav")
 
 function DFT(muestras::Vector{Float64}, frecuenciaMaxima::Float64)
@@ -90,9 +90,11 @@ function hann_window(bloque)
     return bloque .* [0.5 * (1 - cos(2π * n / (N - 1))) for n in (0:N-1)]
 end
 
-tamanioBloque = 2048
+tamanioBloque = 2^12
 
-bloquesMuestras = [hann_window(y[inicio:(inicio+tamanioBloque), 1]) for inicio in (1:Int(floor(tamanioBloque * 0.25)):((size(y)[1])-tamanioBloque))]
+muestrasConPadding = [zeros(tamanioBloque); y[:, 1]; zeros(tamanioBloque)]
+
+bloquesMuestras = [hann_window(muestrasConPadding[inicio:(inicio+tamanioBloque)]) for inicio in (1:Int(floor(tamanioBloque * 0.125)):((size(muestrasConPadding)[1])-tamanioBloque))]
 
 frecuenciaMaxima = 2_000.0
 
