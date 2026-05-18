@@ -1,6 +1,6 @@
 module DftPorMatrizesSeparado
 
-export dftPorMatrizesSeparado, CacheMatrizDft
+export dftPorMatrizesSeparado, CacheMatrizDftSeparado
 
 function generarMatrizesDft(
     N::Int,
@@ -21,7 +21,7 @@ function generarMatrizesDft(
 
 end
 
-mutable struct CacheMatrizDft
+mutable struct CacheMatrizDftSeparado
     N::Int
     frecuenciaMuestreo::Float32
     frecuenciaMaxima::Float64
@@ -29,11 +29,11 @@ mutable struct CacheMatrizDft
     matrizDftImaginaria::Matrix{Float64}
 end
 
-function getMatrizesDFT(
+function getMatrizesDft(
     N::Int,
     frecuenciaMuestreo::Float32,
     frecuenciaMaxima::Float64,
-    cache::CacheMatrizDft
+    cache::CacheMatrizDftSeparado
 )::Tuple{Matrix{Float64},Matrix{Float64}}
 
     if (cache.N === N && cache.frecuenciaMuestreo === frecuenciaMuestreo && cache.frecuenciaMaxima === frecuenciaMaxima)
@@ -59,12 +59,12 @@ function dftPorMatrizesSeparado(
     muestras::Vector{Float64},
     frecuenciaMuestreo::Float32,
     frecuenciaMaxima::Float64,
-    cache::CacheMatrizDft
+    cache::CacheMatrizDftSeparado
 )::Vector{Tuple{Float64,Float64}}
 
     N = size(muestras)[1]
 
-    (matrizDftReal, matrizDftImaginario) = getMatrizesDFT(N, frecuenciaMuestreo, frecuenciaMaxima, cache)
+    (matrizDftReal, matrizDftImaginario) = getMatrizesDft(N, frecuenciaMuestreo, frecuenciaMaxima, cache)
 
     resultadoReal = matrizDftReal * muestras
 

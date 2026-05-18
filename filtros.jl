@@ -16,7 +16,7 @@ frecuenciaMaxima = 2_000.0
 
 # DFT
 
-function hacerDft(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float32, frecuenciaMaxima::Float64)
+function hacerDftSeparado(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float32, frecuenciaMaxima::Float64)
 
     println("DFT")
 
@@ -34,7 +34,7 @@ end
 
 # FFT
 
-function hacerFft(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float32, frecuenciaMaxima::Float64)
+function hacerFftSeparado(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float32, frecuenciaMaxima::Float64)
 
     println("FFT")
 
@@ -52,33 +52,55 @@ end
 
 # DFT Matriz
 
-function hacerDftMatriz(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float32, frecuenciaMaxima::Float64)
+function hacerDftMatrizSeparado(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float32, frecuenciaMaxima::Float64)
 
-    println("DFT Matriz")
+    println("DFT Matriz separado")
 
-    tInicioDftMatriz = time()
+    tInicioDftMatrizSeparado = time()
 
-    cacheMatrizDft = FourierTransform.CacheMatrizDft(0, 0, 0, Matrix{Float64}(undef, 0, 0), Matrix{Float64}(undef, 0, 0))
+    cacheMatrizDftSeparado = FourierTransform.CacheMatrizDftSeparado(0, 0, 0, Matrix{Float64}(undef, 0, 0), Matrix{Float64}(undef, 0, 0))
 
-    dftMatriz = FourierTransform.dftPorMatrizesSeparado.(bloques, frecuenciaMuestreo, frecuenciaMaxima, Ref(cacheMatrizDft))
+    dftMatriz = FourierTransform.dftPorMatrizesSeparado.(bloques, frecuenciaMuestreo, frecuenciaMaxima, Ref(cacheMatrizDftSeparado))
 
-    duracionDftMatriz = time() - tInicioDftMatriz
+    duracionDftMatrizSeparado = time() - tInicioDftMatrizSeparado
 
-    println("duración DFT Matriz: ", round(duracionDftMatriz, digits=1), "s")
+    println("duración DFT Matriz separado: ", round(duracionDftMatrizSeparado, digits=1), "s")
 
-    return FourierTransform.hacerGrafoSeparado(dftMatriz, frecuenciaMaxima, titulo="DFT Matriz ($(round(duracionDftMatriz, digits=1))s)")
+    return FourierTransform.hacerGrafoSeparado(dftMatriz, frecuenciaMaxima, titulo="DFT Matriz separado ($(round(duracionDftMatrizSeparado, digits=1))s)")
+
+end
+
+# DFT Matriz complejos
+
+function hacerDftMatrizComplejo(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float32, frecuenciaMaxima::Float64)
+
+    println("DFT Matriz complejo")
+
+    tInicioDftMatrizComplejo = time()
+
+    cacheMatrizDftComplejo = FourierTransform.CacheMatrizDftComplejo(0, 0, 0, Matrix{ComplexF64}(undef, 0, 0))
+
+    dftMatrizComplejo = FourierTransform.dftPorMatrizesComplejo.(bloques, frecuenciaMuestreo, frecuenciaMaxima, Ref(cacheMatrizDftComplejo))
+
+    duracionDftMatrizComplejo = time() - tInicioDftMatrizComplejo
+
+    println("duración DFT Matriz complejo: ", round(duracionDftMatrizComplejo, digits=1), "s")
+
+    return FourierTransform.hacerGrafoComplejo(dftMatrizComplejo, frecuenciaMaxima, titulo="DFT Matriz complejo ($(round(duracionDftMatrizComplejo, digits=1))s)")
 
 end
 
 # Graficos
 
-pDft = hacerDft(bloques, frecuenciaMuestreo, frecuenciaMaxima)
+pDft = hacerDftSeparado(bloques, frecuenciaMuestreo, frecuenciaMaxima)
 
-pFft = hacerFft(bloques, frecuenciaMuestreo, frecuenciaMaxima)
+pFft = hacerFftSeparado(bloques, frecuenciaMuestreo, frecuenciaMaxima)
 
-pDftMatriz = hacerDftMatriz(bloques, frecuenciaMuestreo, frecuenciaMaxima)
+pDftMatriz = hacerDftMatrizSeparado(bloques, frecuenciaMuestreo, frecuenciaMaxima)
 
-p = plot(pDft, pFft, pDftMatriz, layout=(1, 3))
+pDftMatrizComplejos = hacerDftMatrizComplejo(bloques, frecuenciaMuestreo, frecuenciaMaxima)
+
+p = plot(pDft, pFft, pDftMatriz, pDftMatrizComplejos, layout=(1, 4))
 
 display(p)
 
