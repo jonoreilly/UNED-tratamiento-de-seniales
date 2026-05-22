@@ -9,7 +9,7 @@ export
     filtrarPasoBajo,
     filtrarPasoAlto,
     filtrarPasoBanda
-    
+
 "Atenua la señal siguiendo el patron descrito por el parametro `filtro`. Filtro banda 1kHz-5kHz -> ((1000 < f && f < 5000) ? 1.0 : 0.0)"
 function filtrarFrecuencias(muestras::Vector{Float64}, frecuenciaMuestreo::Float64, filtro::Function)::Vector{Float64}
 

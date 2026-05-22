@@ -124,6 +124,13 @@ function hacerGrafoComplejo(
     duracionOriginal::Union{Float64,Nothing}=nothing
 )::Plots.Plot
 
+    # function sigmoid_scaled(x, maxval; k=10.0)
+    #     x0 = 0.01 * maxval
+    #     s = 1 / (1 + exp(-k * (x - x0)))
+    #     return s * maxval 
+    # end
+    # amplitudesDeFrecuencias = [sigmoid_scaled.(abs.(bloque), 200) for bloque in componentesDeFrecuencias]
+
     amplitudesDeFrecuencias = [abs.(bloque) for bloque in componentesDeFrecuencias]
 
     return hacerGrafoIntensidades(

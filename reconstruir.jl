@@ -5,81 +5,88 @@ include("transformadorFourier/main.jl")
 
 using .TransformadorFourier
 
-y, frecuenciaMuestreo = wavread(raw".\audio\aoe.wav")
+y, fs = wavread(raw".\audio\ukelele.wav")
+# y, fs = wavread(raw".\audio\aoe.wav")
 # y, frecuenciaMuestreo = wavread(raw"C:\Windows\Media\Alarm02.wav")
 # y, frecuenciaMuestreo = wavread(raw"C:\Windows\Media\Ring01.wav")
 # y, frecuenciaMuestreo = wavread(raw".\example.wav")
 
 
-frecuenciaMaxima = Float64(frecuenciaMuestreo)
+# FFT Complejo
 
-# DFT Matriz complejos 1
+function hacerFftComplejo(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float64, frecuenciaMaxima::Float64, duracionOriginal::Float64, titulo::String)
 
-bloques1 = TransformadorFourier.hacerBloques(y[:, 1])
+    println("FFT Complejo - ", titulo)
 
-println("DFT Matriz complejo 1")
+    tInicioFft = time()
 
-tInicioDftMatrizComplejo1 = time()
+    fft = TransformadorFourier.fftComplejo.(bloques .|> x -> complex.(x))
 
-cacheMatrizDftComplejo = TransformadorFourier.CacheMatrizDftComplejo(0, 0, 0, Matrix{ComplexF64}(undef, 0, 0))
+    duracionFft = time() - tInicioFft
 
-dftMatrizComplejo1 = TransformadorFourier.dftPorMatrizesComplejo.(bloques1, frecuenciaMuestreo, frecuenciaMaxima, Ref(cacheMatrizDftComplejo))
+    println("duración FFT Complejo - ", titulo, ": ", round(duracionFft, digits=1), "s")
 
-duracionDftMatrizComplejo1 = time() - tInicioDftMatrizComplejo1
+    pFft = TransformadorFourier.hacerGrafoComplejo(fft, frecuenciaMuestreo, frecuenciaMaximaGrafo=frecuenciaMaxima, duracionOriginal=duracionOriginal, titulo=titulo)
 
-println("duración DFT Matriz complejo 1: ", round(duracionDftMatrizComplejo1, digits=1), "s")
+    return fft, pFft
 
-pDft1 = TransformadorFourier.hacerGrafoComplejo(dftMatrizComplejo1, frecuenciaMaxima, frecuenciaMaximaGrafo=2_000.0, titulo="DFT Matriz complejo 1 ($(round(duracionDftMatrizComplejo1, digits=1))s)")
+end
 
-# Inverso DFT Matriz complejos
+# Reconstruir señal
 
-println("Inverso DFT Matriz complejo")
+function reconstruirSenial(ft::Vector{Vector{ComplexF64}}, frecuenciaMuestreo::Float64)
 
-tInicioInversoDftMatrizComplejo = time()
+    println("Reconstruir señal")
 
-cacheMatrizInversaDftComplejo = TransformadorFourier.CacheMatrizInversaDftComplejo(0, 0, 0, Matrix{ComplexF64}(undef, 0, 0))
+    tInicioReconstruirSenial = time()
 
-muestrasEnBloques = TransformadorFourier.inversoDftPorMatrizesComplejo.(dftMatrizComplejo1, frecuenciaMuestreo, frecuenciaMaxima, Ref(cacheMatrizInversaDftComplejo))
+    cacheMatrizInversaDftComplejo = TransformadorFourier.CacheMatrizInversaDftComplejo(0, 0, 0, Matrix{ComplexF64}(undef, 0, 0))
 
-muestras = TransformadorFourier.invertirBloques(muestrasEnBloques)
+    muestrasEnBloques = TransformadorFourier.inversoDftPorMatrizesComplejo.(ft, frecuenciaMuestreo, frecuenciaMuestreo, Ref(cacheMatrizInversaDftComplejo))
 
-duracionDftInversoMatrizComplejo = time() - tInicioInversoDftMatrizComplejo
+    muestras = TransformadorFourier.invertirBloques(muestrasEnBloques)
 
-println("duración inverso DFT Matriz complejo: ", round(duracionDftInversoMatrizComplejo, digits=1), "s")
+    duracionReconstruirSenial = time() - tInicioReconstruirSenial
 
-# DFT Matriz complejos 2
+    println("duración Reconstruir señal: ", round(duracionReconstruirSenial, digits=1), "s")
 
-println("DFT Matriz complejo 2")
+    return muestras
 
-bloques2 = TransformadorFourier.hacerBloques(muestras)
+end
 
-tInicioDftMatrizComplejo2 = time()
+frecuenciaMaxima = 1_000.0
+frecuenciaMuestreo = Float64(fs)
+muestras = y[:, 1]
 
-dftMatrizComplejo2 = TransformadorFourier.dftPorMatrizesComplejo.(bloques2, frecuenciaMuestreo, frecuenciaMaxima, Ref(cacheMatrizDftComplejo))
+# FFT
 
-duracionDftMatrizComplejo2 = time() - tInicioDftMatrizComplejo2
+duracionOriginal = size(muestras)[1] / frecuenciaMuestreo
 
-println("duración DFT Matriz complejo 2: ", round(duracionDftMatrizComplejo2, digits=1), "s")
+bloquesOriginal = TransformadorFourier.hacerBloques(muestras)
 
-pDft2 = TransformadorFourier.hacerGrafoComplejo(dftMatrizComplejo2, frecuenciaMaxima, frecuenciaMaximaGrafo=2_000.0, titulo="DFT Matriz complejo 2 ($(round(duracionDftMatrizComplejo2, digits=1))s)")
+fftOriginal, pFftOriginal = hacerFftComplejo(bloquesOriginal, frecuenciaMuestreo, frecuenciaMaxima, duracionOriginal, "Original")
 
-# Audio
+# Reconstruir señal
 
-println("Reproducioendo original...")
+muestrasReconstruido = reconstruirSenial(fftOriginal, frecuenciaMuestreo)
 
-# wavplay(y, frecuenciaMuestreo)
+# FFT señal reconstruida
 
-println("Reproducioendo reconstruido...")
+duracionReconstruido = size(muestrasReconstruido)[1] / frecuenciaMuestreo
 
-wavplay(repeat(muestras, 1, 2), frecuenciaMuestreo)
+bloquesReconstruido = TransformadorFourier.hacerBloques(muestrasReconstruido)
+
+fftReconstruido, pFftReconstruido = hacerFftComplejo(bloquesOriginal, frecuenciaMuestreo, frecuenciaMaxima, duracionReconstruido, "Reconstruido")
 
 # Graficos
 
-p = plot(pDft1, pDft2, layout=(1, 2))
-
+p = plot(pFftOriginal, pFftReconstruido, layout=(1, 2))
 display(p)
 
+# Audio
 
+wavplay(y, fs)
+wavplay(hcat(muestrasReconstruido, muestrasReconstruido), fs)
 
-println("Press Enter to close...")
+println("Pulsa Enter para cerrar...")
 readline()

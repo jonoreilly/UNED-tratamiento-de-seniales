@@ -1,6 +1,6 @@
 module Bloques
 
-export hacerBloques, invertirBloques
+export hacerBloques, invertirBloques, TamanioBloque, Solapamiento
 
 function generarVentanaHann(N::Int)
 

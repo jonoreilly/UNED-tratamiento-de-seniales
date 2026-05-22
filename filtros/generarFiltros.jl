@@ -68,14 +68,14 @@ function getPermisividad(frecuencia::Float64, filtros::Vector{Tuple{Int,Float64}
 
 end
 
-filtros = [(800, 0.0), (801, 1.0), (1200, 0.2), (1500, 1.0), (1501, 0.0)]
+# filtros = [(800, 0.0), (801, 1.0), (1200, 0.2), (1500, 1.0), (1501, 0.0)]
 
-[200.0, 1000.0, 1050.0, 1100.0, 1150.0, 2000.0] .|> f -> begin
+# [200.0, 1000.0, 1050.0, 1100.0, 1150.0, 2000.0] .|> f -> begin
 
-    println("")
-    println("f: ", f)
-    println("filtroInferior: ", getFiltroInferior(f, filtros))
-    println("filtroSuperior: ", getFiltroSuperior(f, filtros))
-    println("permisividad: ", getPermisividad(f, filtros))
+#     println("")
+#     println("f: ", f)
+#     println("filtroInferior: ", getFiltroInferior(f, filtros))
+#     println("filtroSuperior: ", getFiltroSuperior(f, filtros))
+#     println("permisividad: ", getPermisividad(f, filtros))
 
-end
+# end

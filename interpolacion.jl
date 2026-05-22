@@ -1,7 +1,8 @@
 using WAV
 using Plots
 
-y, fs = wavread(raw"C:\Windows\Media\Ring01.wav")
+y, fs = wavread(raw".\audio\ukelele.wav")
+# y, fs = wavread(raw".\audio\aoe.wav")
 
 # Injecta los valores producidos por la funcion de interpolación entre los valores de la fuente 
 function interpolar(fuente::Matrix{Float64}, funcion::Function)
@@ -74,5 +75,5 @@ plot!(3000:4000, lineal[3000:4000, 1], seriestype=:line, size=(1900, 900))
 
 display(p)
 
-println("Press Enter to close...")
+println("Pulsa Enter para cerrar...")
 readline()

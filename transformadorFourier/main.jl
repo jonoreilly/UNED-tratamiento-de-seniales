@@ -24,6 +24,8 @@ export
     hacerGrafoSeparado,
     hacerGrafoComplejo,
     hacerBloques,
-    invertirBloques
+    invertirBloques,
+    TamanioBloque,
+    Solapamiento
 
 end

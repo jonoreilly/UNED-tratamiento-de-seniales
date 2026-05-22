@@ -5,7 +5,8 @@ include("transformadorFourier/main.jl")
 
 using .TransformadorFourier
 
-y, fs = wavread(raw".\audio\aoe.wav")
+y, fs = wavread(raw".\audio\ukelele.wav")
+# y, fs = wavread(raw".\audio\aoe.wav")
 # y, fs = wavread(raw"C:\Windows\Media\Alarm02.wav")
 # y, fs = wavread(raw"C:\Windows\Media\Ring01.wav")
 # y, fs = wavread(raw".\audio\example.wav")
@@ -226,10 +227,10 @@ grafos = [
 
 p = plot(
     grafos...,
-    layout=(2, Int(ceil(size(grafos)[1] / 2)))
+    layout=(Int(ceil(size(grafos)[1] / 4)), 4)
 )
 
 display(p)
 
-println("Press Enter to close...")
+println("Pulsa Enter para cerrar...")
 readline()
