@@ -5,7 +5,7 @@ export dftComplejo
 "Algoritmo DFT con números complejos"
 function dftComplejo(
     muestras::Vector{Float64},
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64
 )::Vector{ComplexF64}
 

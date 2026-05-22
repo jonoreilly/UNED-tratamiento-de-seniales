@@ -4,7 +4,7 @@ export dftPorMatrizesSeparado, CacheMatrizDftSeparado
 
 function generarMatrizesDft(
     N::Int,
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64
 )::Tuple{Matrix{Float64},Matrix{Float64}}
 
@@ -23,7 +23,7 @@ end
 
 mutable struct CacheMatrizDftSeparado
     N::Int
-    frecuenciaMuestreo::Float32
+    frecuenciaMuestreo::Float64
     frecuenciaMaxima::Float64
     matrizDftReal::Matrix{Float64}
     matrizDftImaginaria::Matrix{Float64}
@@ -31,7 +31,7 @@ end
 
 function getMatrizesDft(
     N::Int,
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64,
     cache::CacheMatrizDftSeparado
 )::Tuple{Matrix{Float64},Matrix{Float64}}
@@ -57,7 +57,7 @@ end
 "Algoritmo DFT por Matrizes con los componentes separados"
 function dftPorMatrizesSeparado(
     muestras::Vector{Float64},
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64,
     cache::CacheMatrizDftSeparado
 )::Vector{Tuple{Float64,Float64}}

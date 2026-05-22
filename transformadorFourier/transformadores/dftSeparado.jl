@@ -5,7 +5,7 @@ export dftSeparado
 "Algoritmo DFT con los componentes separados"
 function dftSeparado(
     muestras::Vector{Float64},
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64
 )::Vector{Tuple{Float64,Float64}}
 

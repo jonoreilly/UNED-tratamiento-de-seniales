@@ -4,7 +4,7 @@ export inversoDftPorMatrizesComplejo, CacheMatrizInversaDftComplejo
 
 function generarMatrizInversaDftComplejo(
     N::Int,
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64
 )::Matrix{ComplexF64}
 
@@ -22,14 +22,14 @@ end
 
 mutable struct CacheMatrizInversaDftComplejo
     N::Int
-    frecuenciaMuestreo::Float32
+    frecuenciaMuestreo::Float64
     frecuenciaMaxima::Float64
     matrizInversaDft::Matrix{ComplexF64}
 end
 
 function getMatrizInversaDftComplejo(
     N::Int,
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64,
     cache::CacheMatrizInversaDftComplejo
 )::Matrix{ComplexF64}
@@ -54,7 +54,7 @@ end
 "Reconstruye las muestras que generaron estas frecuencias mediante el algoritmo inverso de DFT por Matrizes con números complejos"
 function inversoDftPorMatrizesComplejo(
     componentesDeFrecuencias::Vector{ComplexF64},
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64,
     cache::CacheMatrizInversaDftComplejo
 )::Vector{Float64}

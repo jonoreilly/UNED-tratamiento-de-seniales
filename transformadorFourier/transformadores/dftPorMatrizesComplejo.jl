@@ -4,7 +4,7 @@ export dftPorMatrizesComplejo, CacheMatrizDftComplejo
 
 function generarMatrizDftComplejo(
     N::Int,
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64
 )::Matrix{ComplexF64}
 
@@ -20,14 +20,14 @@ end
 
 mutable struct CacheMatrizDftComplejo
     N::Int
-    frecuenciaMuestreo::Float32
+    frecuenciaMuestreo::Float64
     frecuenciaMaxima::Float64
     matrizDft::Matrix{ComplexF64}
 end
 
 function getMatrizDftComplejo(
     N::Int,
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64,
     cache::CacheMatrizDftComplejo
 )::Matrix{ComplexF64}
@@ -52,7 +52,7 @@ end
 "Algoritmo DFT por Matrizes con números complejos"
 function dftPorMatrizesComplejo(
     muestras::Vector{Float64},
-    frecuenciaMuestreo::Float32,
+    frecuenciaMuestreo::Float64,
     frecuenciaMaxima::Float64,
     cache::CacheMatrizDftComplejo
 )::Vector{ComplexF64}

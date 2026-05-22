@@ -1,4 +1,4 @@
-module FourierTransform
+module TransformadorFourier
 
 include("transformadores/main.jl")
 include("inversores/main.jl")
