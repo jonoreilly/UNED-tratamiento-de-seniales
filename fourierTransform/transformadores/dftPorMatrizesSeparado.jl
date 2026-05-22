@@ -67,7 +67,6 @@ function dftPorMatrizesSeparado(
     (matrizDftReal, matrizDftImaginario) = getMatrizesDft(N, frecuenciaMuestreo, frecuenciaMaxima, cache)
 
     resultadoReal = matrizDftReal * muestras
-
     resultadoImaginario = matrizDftImaginario * muestras
 
     resultado = [(resultadoReal[i], resultadoImaginario[i]) for i in eachindex(resultadoReal)]

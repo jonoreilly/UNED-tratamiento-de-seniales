@@ -18,7 +18,6 @@ function dftSeparado(
         angulos = (0:N-1) .* ((-2 * pi * f) / N)
 
         real = sum(muestras .* cos.(angulos))
-
         imaginario = sum(muestras .* sin.(angulos))
 
         return (real, imaginario)

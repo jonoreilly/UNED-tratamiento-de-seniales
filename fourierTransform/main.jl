@@ -1,29 +1,26 @@
 module FourierTransform
 
-include("dftSeparado.jl")
-include("dftPorMatrizesSeparado.jl")
-include("dftPorMatrizesComplejo.jl")
-include("inversoDftPorMatrizesComplejo.jl")
-include("fftSeparado.jl")
+include("transformadores/main.jl")
+include("inversores/main.jl")
 include("grafos.jl")
 include("bloques.jl")
 
-using .DftSeparado
-using .DftPorMatrizesSeparado
-using .DftPorMatrizesComplejo
-using .InversoDftPorMatrizesComplejo
-using .FftSeparado
+using .Transformadores
+using .Inversores
 using .Grafos
 using .Bloques
 
-export dftSeparado,
+export
+    dftSeparado,
+    dftComplejo,
+    fftSeparado,
+    fftComplejo,
     dftPorMatrizesSeparado,
     CacheMatrizDftSeparado,
     dftPorMatrizesComplejo,
     CacheMatrizDftComplejo,
     inversoDftPorMatrizesComplejo,
     CacheMatrizInversaDftComplejo,
-    fftSeparado,
     hacerGrafoSeparado,
     hacerGrafoComplejo,
     hacerBloques,
