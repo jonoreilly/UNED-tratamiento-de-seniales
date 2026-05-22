@@ -46,9 +46,7 @@ function filtrarFrecuencias(muestras::Vector{Float64}, frecuenciaMuestreo::Float
         for bloque in fft
     ]
 
-    cacheMatrizInversaDftComplejo = TransformadorFourier.CacheMatrizInversaDftComplejo(0, 0, 0, Matrix{ComplexF64}(undef, 0, 0))
-
-    resultadoEnBloques = TransformadorFourier.inversoDftPorMatrizesComplejo.(fftFiltrado, frecuenciaMuestreo, frecuenciaMuestreo, Ref(cacheMatrizInversaDftComplejo))
+    resultadoEnBloques = TransformadorFourier.inversorFftComplejo.(fftFiltrado)
 
     resultado = TransformadorFourier.invertirBloques(resultadoEnBloques)
 

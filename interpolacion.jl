@@ -31,21 +31,14 @@ function interpolar(fuente::Matrix{Float64}, funcion::Function)
 
 end
 
-println("typeof(y):", typeof(y))
 
-println("size(y):", size(y))
+# Sin interpolar
 
-println("y[1, :]:", y[1:20, :])
+sinInterpolar = interpolar(y, (inicial, final) -> [inicial, inicial, inicial])
 
 # Interpolación constante
 
 constante = interpolar(y, (inicial, final) -> [inicial, inicial, final])
-
-println("typeof(constante):", typeof(constante))
-
-println("size(constante)::", size(constante))
-
-println("constante[1, :]:", constante[1:20, :])
 
 # Interpolación lineal
 
@@ -57,23 +50,20 @@ lineal = interpolar(y, (inicial, final) -> begin
 
 end)
 
-println("typeof(lineal):", typeof(lineal))
+rangoDeInteres = (100000:100500)
+size = (1900, 900)
 
-println("size(lineal)::", size(lineal))
+p = plot(sinInterpolar[rangoDeInteres, 1], label="Original", seriestype=:line, size=size)
+plot!(constante[rangoDeInteres, 1], label="Constante", seriestype=:line, size=size)
+plot!(lineal[rangoDeInteres, 1], label="Lineal", seriestype=:line, sizesize)
 
-println("lineal[1, :]:", lineal[1:20, :])
+display(p)
 
 nuevaFrecuencia = fs * 4
 
-# wavplay(y, fs)
-# wavplay(constante, nuevaFrecuencia)
-# wavplay(lineal, nuevaFrecuencia)
-
-p = plot(3000:4000, interpolar(y, (inicial, final) -> [inicial, inicial, inicial])[3000:4000, 1], seriestype=:line, size=(1900, 900))
-plot!(3000:4000, constante[3000:4000, 1], seriestype=:line, size=(1900, 900))
-plot!(3000:4000, lineal[3000:4000, 1], seriestype=:line, size=(1900, 900))
-
-display(p)
+wavplay(y, fs)
+wavplay(constante, nuevaFrecuencia)
+wavplay(lineal, nuevaFrecuencia)
 
 println("Pulsa Enter para cerrar...")
 readline()

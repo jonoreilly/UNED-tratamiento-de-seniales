@@ -40,9 +40,7 @@ function reconstruirSenial(ft::Vector{Vector{ComplexF64}}, frecuenciaMuestreo::F
 
     tInicioReconstruirSenial = time()
 
-    cacheMatrizInversaDftComplejo = TransformadorFourier.CacheMatrizInversaDftComplejo(0, 0, 0, Matrix{ComplexF64}(undef, 0, 0))
-
-    muestrasEnBloques = TransformadorFourier.inversoDftPorMatrizesComplejo.(ft, frecuenciaMuestreo, frecuenciaMuestreo, Ref(cacheMatrizInversaDftComplejo))
+    muestrasEnBloques = TransformadorFourier.inversorFftComplejo.(ft)
 
     muestras = TransformadorFourier.invertirBloques(muestrasEnBloques)
 
