@@ -19,6 +19,7 @@ export
     CacheMatrizDftSeparado,
     dftPorMatrizesComplejo,
     CacheMatrizDftComplejo,
+    reconstruirFftComplejo,
     inversoDftPorMatrizesComplejo,
     CacheMatrizInversaDftComplejo,
     hacerGrafoSeparado,

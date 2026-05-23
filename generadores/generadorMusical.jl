@@ -104,9 +104,7 @@ function generarMuestrasAcordes(muestrasOriginal::Vector{Float64}, frecuenciaMue
     # Para evitar interferencias destructivas, hay que mezclar las fases de cada componente
     ftGeneradoMezclado = [bloque .|> f -> (abs(f) * cis(2π * rand())) for bloque in ftGenerado]
 
-    resultadoEnBloques = TransformadorFourier.inversorFftComplejo.(ftGeneradoMezclado)
-
-    resultado = TransformadorFourier.invertirBloques(resultadoEnBloques)
+    resultado = TransformadorFourier.reconstruirFftComplejo(ftGeneradoMezclado)
 
     return resultado
 

@@ -6,10 +6,6 @@ include("transformadorFourier/main.jl")
 using .TransformadorFourier
 
 y, fs = wavread(raw".\audio\ukelele.wav")
-# y, fs = wavread(raw".\audio\aoe.wav")
-# y, fs = wavread(raw"C:\Windows\Media\Alarm02.wav")
-# y, fs = wavread(raw"C:\Windows\Media\Ring01.wav")
-# y, fs = wavread(raw".\audio\example.wav")
 
 frecuenciaMaxima = 2_000.0
 
@@ -212,18 +208,17 @@ end
 # Graficos
 
 grafos = [
-    # hacerDftSeparadoTotal,
-    # hacerDftComplejoTotal,
-    # hacerDftSeparadoParcial,
+    hacerDftSeparadoTotal,
+    hacerDftComplejoTotal,
+    hacerDftSeparadoParcial,
     hacerDftComplejoParcial,
-    # hacerFftSeparado,
+    hacerFftSeparado,
     hacerFftComplejo,
-    # hacerDftMatrizSeparadoTotal,
+    hacerDftMatrizSeparadoTotal,
     hacerDftMatrizComplejoTotal,
-    # hacerDftMatrizSeparadoParcial,
+    hacerDftMatrizSeparadoParcial,
     hacerDftMatrizComplejoParcial
 ] .|> f -> f(bloques, frecuenciaMuestreo, frecuenciaMaxima, duracionOriginal)
-
 
 p = plot(
     grafos...,

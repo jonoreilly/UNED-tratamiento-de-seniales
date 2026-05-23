@@ -1,5 +1,6 @@
 using WAV
 using Plots
+using DSP
 
 include("transformadorFourier/main.jl")
 include("filtros/main.jl")
@@ -10,10 +11,24 @@ using .Filtros
 using .GeneradorMusical
 
 y, fs = wavread(raw".\audio\ukelele.wav")
-# y, fs = wavread(raw".\audio\aoe.wav")
-# y, fs = wavread(raw"C:\Windows\Media\Alarm02.wav")
-# y, fs = wavread(raw"C:\Windows\Media\Ring01.wav")
-# y, fs = wavread(raw".\audio\example.wav")
+
+# FFT Complejo
+
+function hacerFftComplejo(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float64, frecuenciaMaxima::Float64, duracionOriginal::Float64, titulo::String)
+
+    println("FFT Complejo - ", titulo)
+
+    tInicioFft = time()
+
+    fft = TransformadorFourier.fftComplejo.(bloques .|> x -> complex.(x))
+
+    duracionFft = time() - tInicioFft
+
+    println("duración FFT Complejo - ", titulo, ": ", round(duracionFft, digits=1), "s")
+
+    return TransformadorFourier.hacerGrafoComplejo(fft, frecuenciaMuestreo, frecuenciaMaximaGrafo=frecuenciaMaxima, duracionOriginal=duracionOriginal, titulo=titulo)
+
+end
 
 # Filtro
 
@@ -33,21 +48,57 @@ function hacerFiltrado(muestras::Vector{Float64}, frecuenciaMuestreo::Float64, f
 
 end
 
-# FFT Complejo
+# Filtrar DSP
 
-function hacerFftComplejo(bloques::Vector{Vector{Float64}}, frecuenciaMuestreo::Float64, frecuenciaMaxima::Float64, duracionOriginal::Float64, titulo::String)
+function hacerFiltradoDsp(muestras::Vector{Float64}, filtro::FilterCoefficients, titulo::String)
 
-    println("FFT Complejo - ", titulo)
+    println("Filtrado DSP - ", titulo)
 
-    tInicioFft = time()
+    tInicioFiltrado = time()
 
-    fft = TransformadorFourier.fftComplejo.(bloques .|> x -> complex.(x))
+    muestrasFiltrado = filt(filtro, muestras)
 
-    duracionFft = time() - tInicioFft
+    duracionFiltrado = time() - tInicioFiltrado
 
-    println("duración FFT Complejo - ", titulo, ": ", round(duracionFft, digits=1), "s")
+    println("duración Filtrado DSP: - ", titulo, ": ", round(duracionFiltrado, digits=1), "s")
 
-    return TransformadorFourier.hacerGrafoComplejo(fft, frecuenciaMuestreo, frecuenciaMaximaGrafo=frecuenciaMaxima, duracionOriginal=duracionOriginal, titulo=titulo)
+    return muestrasFiltrado
+
+end
+
+function hacerFiltradoDspPasoAlto(muestras::Vector{Float64}, frecuenciaMuestreo::Float64, frecuenciaMinima::Float64, titulo::String)
+
+    filtro =
+        digitalfilter(
+            Highpass(frecuenciaMinima / (frecuenciaMuestreo / 2)),
+            Butterworth(16)
+        )
+
+    return hacerFiltradoDsp(muestras, filtro, titulo)
+
+end
+
+function hacerFiltradoDspPasoBajo(muestras::Vector{Float64}, frecuenciaMuestreo::Float64, frecuenciaMaxima::Float64, titulo::String)
+
+    filtro =
+        digitalfilter(
+            Lowpass(frecuenciaMaxima / (frecuenciaMuestreo / 2)),
+            Butterworth(16)
+        )
+
+    return hacerFiltradoDsp(muestras, filtro, titulo)
+
+end
+
+function hacerFiltradoDspPasoBanda(muestras::Vector{Float64}, frecuenciaMuestreo::Float64, frecuenciaMinima::Float64, frecuenciaMaxima::Float64, titulo::String)
+
+    filtro =
+        digitalfilter(
+            Bandpass(frecuenciaMinima / (frecuenciaMuestreo / 2), frecuenciaMaxima / (frecuenciaMuestreo / 2)),
+            Butterworth(16)
+        )
+
+    return hacerFiltradoDsp(muestras, filtro, titulo)
 
 end
 
@@ -69,15 +120,26 @@ function generarAcordes(muestrasOriginal::Vector{Float64}, frecuenciaMuestreo::F
 
 end
 
-frecuenciaMaxima = 1_000.0
+frecuenciaMaxima = 3_000.0
 frecuenciaMuestreo = Float64(fs)
 muestras = y[:, 1]
 
-filtro = f -> (
-    (400 < f && f < 1000) ? 1.0 : 0.0
-)
+frecuenciaMinimaPasoAlto = 2_000.0
+frecuenciaMaximaPasoBajo = 1_500.0
+frecuenciaMinimaPasoBanda = 500.0
+frecuenciaMaximaPasoBanda = 1_500.0
 
-muestrasFiltrado = hacerFiltrado(muestras, frecuenciaMuestreo, filtro)
+filtroPasoAlto = f -> (frecuenciaMinimaPasoAlto < f ? 1.0 : 0.0)
+filtroPasoBajo = f -> (f < frecuenciaMaximaPasoBajo ? 1.0 : 0.0)
+filtroPasoBanda = f -> ((frecuenciaMinimaPasoBanda < f && f < frecuenciaMaximaPasoBanda) ? 1.0 : 0.0)
+
+muestrasFiltradoPasoAlto = hacerFiltrado(muestras, frecuenciaMuestreo, filtroPasoAlto)
+muestrasFiltradoPasoBajo = hacerFiltrado(muestras, frecuenciaMuestreo, filtroPasoBajo)
+muestrasFiltradoPasoBanda = hacerFiltrado(muestras, frecuenciaMuestreo, filtroPasoBanda)
+
+muestrasFiltradoDspPasoAlto = hacerFiltradoDspPasoAlto(muestras, frecuenciaMuestreo, frecuenciaMinimaPasoAlto, "Paso alto 2 kHz")
+muestrasFiltradoDspPasoBajo = hacerFiltradoDspPasoBajo(muestras, frecuenciaMuestreo, frecuenciaMaximaPasoBajo, "Paso bajo 1.5 kHz")
+muestrasFiltradoDspPasoBanda = hacerFiltradoDspPasoBanda(muestras, frecuenciaMuestreo, frecuenciaMinimaPasoBanda, frecuenciaMaximaPasoBanda, "Paso banda 0.5 - 1.5 kHz")
 
 acordes = [
     GeneradorMusical.Acorde(),
@@ -94,18 +156,36 @@ acordes = [
 muestrasGenerado = generarAcordes(muestras, frecuenciaMuestreo, acordes)
 
 duracionOriginal = size(muestras)[1] / frecuenciaMuestreo
-duracionFiltrado = size(muestrasFiltrado)[1] / frecuenciaMuestreo
+duracionFiltradoPasoAlto = size(muestrasFiltradoPasoAlto)[1] / frecuenciaMuestreo
+duracionFiltradoPasoBajo = size(muestrasFiltradoPasoBajo)[1] / frecuenciaMuestreo
+duracionFiltradoPasoBanda = size(muestrasFiltradoPasoBanda)[1] / frecuenciaMuestreo
+duracionFiltradoDspPasoAlto = size(muestrasFiltradoDspPasoAlto)[1] / frecuenciaMuestreo
+duracionFiltradoDspPasoBajo = size(muestrasFiltradoDspPasoBajo)[1] / frecuenciaMuestreo
+duracionFiltradoDspPasoBanda = size(muestrasFiltradoDspPasoBanda)[1] / frecuenciaMuestreo
 duracionGenerado = size(muestrasGenerado)[1] / frecuenciaMuestreo
 
 bloquesInicial = TransformadorFourier.hacerBloques(muestras)
-bloquesFiltrado = TransformadorFourier.hacerBloques(muestrasFiltrado)
+bloquesFiltradoPasoAlto = TransformadorFourier.hacerBloques(muestrasFiltradoPasoAlto)
+bloquesFiltradoPasoBajo = TransformadorFourier.hacerBloques(muestrasFiltradoPasoBajo)
+bloquesFiltradoPasoBanda = TransformadorFourier.hacerBloques(muestrasFiltradoPasoBanda)
+bloquesFiltradoDspPasoAlto = TransformadorFourier.hacerBloques(muestrasFiltradoDspPasoAlto)
+bloquesFiltradoDspPasoBajo = TransformadorFourier.hacerBloques(muestrasFiltradoDspPasoBajo)
+bloquesFiltradoDspPasoBanda = TransformadorFourier.hacerBloques(muestrasFiltradoDspPasoBanda)
 bloquesGenerado = TransformadorFourier.hacerBloques(muestrasGenerado)
 
 grafos = [
     hacerFftComplejo(bloquesInicial, frecuenciaMuestreo, frecuenciaMaxima, duracionOriginal, "Original"),
-    hacerFftComplejo(bloquesFiltrado, frecuenciaMuestreo, frecuenciaMaxima, duracionFiltrado, "Filtrado"),
+    hacerFftComplejo(bloquesFiltradoPasoAlto, frecuenciaMuestreo, frecuenciaMaxima, duracionFiltradoPasoAlto, "Paso alto 2 kHz"),
+    hacerFftComplejo(bloquesFiltradoPasoBajo, frecuenciaMuestreo, frecuenciaMaxima, duracionFiltradoPasoBajo, "Paso bajo 1.5 kHz"),
+    hacerFftComplejo(bloquesFiltradoPasoBanda, frecuenciaMuestreo, frecuenciaMaxima, duracionFiltradoPasoBanda, "Paso banda 0.5 - 1.5 kHz"),
     hacerFftComplejo(bloquesGenerado, frecuenciaMuestreo, frecuenciaMaxima, duracionGenerado, "Generado"),
-    plot(0:2000, filtro.(0:2000), title="Filtro"),
+    hacerFftComplejo(bloquesFiltradoDspPasoAlto, frecuenciaMuestreo, frecuenciaMaxima, duracionFiltradoDspPasoAlto, "DSP - Paso alto 2 kHz"),
+    hacerFftComplejo(bloquesFiltradoDspPasoBajo, frecuenciaMuestreo, frecuenciaMaxima, duracionFiltradoDspPasoBajo, "DSP - Paso bajo 1.5 kHz"),
+    hacerFftComplejo(bloquesFiltradoDspPasoBanda, frecuenciaMuestreo, frecuenciaMaxima, duracionFiltradoDspPasoBanda, "DSP - Paso banda 0.5 - 1.5 kHz"),
+    plot(),
+    plot(0:Int(frecuenciaMaxima), filtroPasoAlto.(0:Int(frecuenciaMaxima)), title="Paso alto 2 kHz"),
+    plot(0:Int(frecuenciaMaxima), filtroPasoBajo.(0:Int(frecuenciaMaxima)), title="Paso bajo 1.5 kHz"),
+    plot(0:Int(frecuenciaMaxima), filtroPasoBanda.(0:Int(frecuenciaMaxima)), title="Paso banda 0.5 - 1.5 kHz"),
 ]
 
 p = plot(
@@ -116,7 +196,12 @@ p = plot(
 display(p)
 
 wavplay(y, fs)
-wavplay(hcat(muestrasFiltrado, muestrasFiltrado), fs)
+wavplay(hcat(muestrasFiltradoPasoAlto, muestrasFiltradoPasoAlto), fs)
+wavplay(hcat(muestrasFiltradoDspPasoAlto, muestrasFiltradoDspPasoAlto), fs)
+wavplay(hcat(muestrasFiltradoPasoBajo, muestrasFiltradoPasoBajo), fs)
+wavplay(hcat(muestrasFiltradoDspPasoBajo, muestrasFiltradoDspPasoBajo), fs)
+wavplay(hcat(muestrasFiltradoPasoBanda, muestrasFiltradoPasoBanda), fs)
+wavplay(hcat(muestrasFiltradoDspPasoBanda, muestrasFiltradoDspPasoBanda), fs)
 wavplay(hcat(muestrasGenerado, muestrasGenerado), fs)
 
 println("Pulsa Enter para cerrar...")

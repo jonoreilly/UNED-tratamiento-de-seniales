@@ -2,7 +2,6 @@ using WAV
 using Plots
 
 y, fs = wavread(raw".\audio\ukelele.wav")
-# y, fs = wavread(raw".\audio\aoe.wav")
 
 # Injecta los valores producidos por la funcion de interpolación entre los valores de la fuente 
 function interpolar(fuente::Matrix{Float64}, funcion::Function)
@@ -31,7 +30,6 @@ function interpolar(fuente::Matrix{Float64}, funcion::Function)
 
 end
 
-
 # Sin interpolar
 
 sinInterpolar = interpolar(y, (inicial, final) -> [inicial, inicial, inicial])
@@ -55,7 +53,7 @@ size = (1900, 900)
 
 p = plot(sinInterpolar[rangoDeInteres, 1], label="Original", seriestype=:line, size=size)
 plot!(constante[rangoDeInteres, 1], label="Constante", seriestype=:line, size=size)
-plot!(lineal[rangoDeInteres, 1], label="Lineal", seriestype=:line, sizesize)
+plot!(lineal[rangoDeInteres, 1], label="Lineal", seriestype=:line, size=size)
 
 display(p)
 

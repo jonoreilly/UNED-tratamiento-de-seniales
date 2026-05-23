@@ -46,9 +46,7 @@ function filtrarFrecuencias(muestras::Vector{Float64}, frecuenciaMuestreo::Float
         for bloque in fft
     ]
 
-    resultadoEnBloques = TransformadorFourier.inversorFftComplejo.(fftFiltrado)
-
-    resultado = TransformadorFourier.invertirBloques(resultadoEnBloques)
+    resultado = TransformadorFourier.reconstruirFftComplejo(fftFiltrado)
 
     return resultado
 

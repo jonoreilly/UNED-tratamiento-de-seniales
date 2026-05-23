@@ -6,11 +6,6 @@ include("transformadorFourier/main.jl")
 using .TransformadorFourier
 
 y, fs = wavread(raw".\audio\ukelele.wav")
-# y, fs = wavread(raw".\audio\aoe.wav")
-# y, frecuenciaMuestreo = wavread(raw"C:\Windows\Media\Alarm02.wav")
-# y, frecuenciaMuestreo = wavread(raw"C:\Windows\Media\Ring01.wav")
-# y, frecuenciaMuestreo = wavread(raw".\example.wav")
-
 
 # FFT Complejo
 
@@ -40,9 +35,7 @@ function reconstruirSenial(ft::Vector{Vector{ComplexF64}}, frecuenciaMuestreo::F
 
     tInicioReconstruirSenial = time()
 
-    muestrasEnBloques = TransformadorFourier.inversorFftComplejo.(ft)
-
-    muestras = TransformadorFourier.invertirBloques(muestrasEnBloques)
+    muestras = TransformadorFourier.reconstruirFftComplejo(ft)
 
     duracionReconstruirSenial = time() - tInicioReconstruirSenial
 
